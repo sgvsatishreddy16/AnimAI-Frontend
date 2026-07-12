@@ -24,7 +24,12 @@ const voiceRes = await fetch('https://api.elevenlabs.io/v1/text-to-speech/XrExE9
       body: JSON.stringify({
         text: script,
         model_id: 'eleven_multilingual_v2',
-        voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+voice_settings: { 
+  stability: 0.35, // Lower = more emotional variation
+  similarity_boost: 0.8, // Higher = more like real voice
+  style: 0.4, // Adds drama — 0 to 1
+  use_speaker_boost: true // Makes it clearer
+}
       })
     });
     
