@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimAI Story Generator — Cinematic Ghibli</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>AnimAI Story Generator</h1>
+        <p class="tagline">Cinematic Ghibli Style • AI does everything</p>
+        
+        <div class="section">
+            <h3>1. Video Format</h3>
+            <button class="ratio-btn active" data-ratio="16:9">16:9 YouTube</button>
+            <button class="ratio-btn" data-ratio="9:16">9:16 Shorts</button>
+        </div>
+
+        <div class="section">
+            <h3>2. Your Roman Telugu Script</h3>
+            <textarea id="script" placeholder="Paste your story here... 
+Example: Scene 1: College gate, morning. Trilochana bhayam tho book pattukoni undi. Shiva vastadu..."></textarea>
+        </div>
+
+        <div class="section">
+            <button id="generate" disabled>Generate Video — Coming Day 2</button>
+            <p class="note">Day 1: UI test only. AI connects tomorrow.</p>
+        </div>
+
+        <div class="section">
+            <h3>3. Preview</h3>
+            <video id="player" controls></video>
+        </div>
+
+        <div class="section">
+            <h3>4. Director Notes — Chat to Edit</h3>
+            <input type="text" id="chat" placeholder="After preview: type edits like 'add rain at 0:23'" disabled>
+            <button id="sendEdit" disabled>Send Edit</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
