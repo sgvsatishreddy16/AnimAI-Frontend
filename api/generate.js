@@ -1,55 +1,67 @@
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Only POST' });
+  if (req.method!== 'POST') return res.status(405).json({ error: 'Only POST' });
   
   const { script, ratio } = req.body;
-  const startTime = Date.now();
   
   try {
-    // 1. Split script into scenes - take first 3 for test
-    const scenes = script.split(/Scene \d+:/).filter(s => s.trim()).slice(0, 3);
+    // 1. Parse script: Split by Scene, extract VISUAL and DIALOGUE
+    const sceneBlocks = script.split(/Scene \d+:/i).filter(s => s.trim());
     
-    // 2. Generate 3 Ghibli images with FREE Pollinations AI - no API key needed
-    const ar = ratio === '9:16' ? '9:16' : ratio === '1:1' ? '1:1' : '16:9';
-    const images = scenes.map(scene => {
-      const prompt = encodeURIComponent(`Ghibli anime style, soft watercolor, ${scene.trim()}, college romance, Telugu culture, highly detailed, 8k`);
-      return `https://image.pollinations.ai/prompt/${prompt}?width=1024&height=${ar === '9:16' ? '1792' : ar === '1:1' ? '1024' : '576'}&nologo=true`;
+    const visuals = [];
+    const dialogues = [];
+    
+    sceneBlocks.forEach(block => {
+      const visualMatch = block.match(/\[VISUAL:(.*?)\]/i);
+      const dialogueMatch = block.match(/DIALOGUE:\s*"(.*?)"/i);
+      
+      if (visualMatch) visuals.push(visualMatch[1].trim());
+      if (dialogueMatch) dialogues.push(dialogueMatch[1].trim());
     });
     
-    // 3. Generate Telugu voice with ElevenLabs - uses your 10k free credits
-const voiceRes = await fetch('https://api.elevenlabs.io/v1/text-to-speech/XrExE9yKIg1WjnnlVkGX', {      method: 'POST',
+    if (visuals.length === 0) throw new Error('No [VISUAL:...] found. Use the new format.');
+    
+    // 2. Images: Use VISUAL description only
+    const ar = ratio === '9:16'? '9:16' : ratio === '1:1'? '1:1' : '16:9';
+    const images = visuals.map(v => {
+      const prompt = encodeURIComponent(`Ghibli anime style, cinematic, ${v}, soft watercolor, highly detailed, 8k`);
+      return `https://image.pollinations.ai/prompt/${prompt}?width=1024&height=${ar === '9:16'? '1792' : ar === '1:1'? '1024' : '576'}&nologo=true&enhance=true`;
+    });
+    
+    // 3. Voice: Use DIALOGUE only, join with pause. ElevenLabs US voice
+    const cleanDialogue = dialogues.join('... '); //... = natural pause
+    
+    const voiceRes = await fetch('https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM', { // Rachel - US Female
+      method: 'POST',
       headers: {
         'xi-api-key': process.env.ELEVENLABS_API_KEY,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        text: script,
+        text: cleanDialogue,
         model_id: 'eleven_multilingual_v2',
-voice_settings: { 
-  stability: 0.35, // Lower = more emotional variation
-  similarity_boost: 0.8, // Higher = more like real voice
-  style: 0.4, // Adds drama — 0 to 1
-  use_speaker_boost: true // Makes it clearer
-}
+        voice_settings: { 
+          stability: 0.4,
+          similarity_boost: 0.8,
+          style: 0.5, // More expressive
+          use_speaker_boost: true 
+        }
       })
     });
     
     if (!voiceRes.ok) throw new Error(`ElevenLabs error: ${await voiceRes.text()}`);
-    
     const audioBuffer = await voiceRes.arrayBuffer();
     const audioBase64 = Buffer.from(audioBuffer).toString('base64');
     
-    // 4. Return everything - 100% FREE
+    // 4. Return for browser to stitch video
     res.status(200).json({
       status: 'success',
       images: images,
       audio: `data:audio/mpeg;base64,${audioBase64}`,
-      credits_used: 40, // Only ElevenLabs credits
-      cost_usd: 0,
-      time_taken: `${((Date.now() - startTime) / 1000).toFixed(1)}s`
+      ratio: ar,
+      cost_usd: 0
     });
     
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: 'Generation failed', details: error.message });
   }
 }
