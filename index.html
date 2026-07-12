@@ -3,42 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnimAI Story Generator — Cinematic Ghibli</title>
-    <link rel="stylesheet" href="style.css">
+    <title>AnimAI - Free AI Video Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 28px;
+            background: linear-gradient(90deg, #e91e63, #9c27b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            text-align: center;
+            opacity: 0.7;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .ratio-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .ratio-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #334155;
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .ratio-btn.active {
+            border-color: #e91e63;
+            background: #e91e63;
+            color: white;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 12px;
+            background: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 14px;
+            resize: vertical;
+            margin-bottom: 16px;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #e91e63;
+        }
+        #generate {
+            width: 100%;
+            padding: 14px;
+            background: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        #generate:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        #generate:not(:disabled):hover {
+            background: #d81b60;
+            transform: translateY(-1px);
+        }
+        #result {
+            margin-top: 20px;
+        }
+        #result video {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+        .format-hint {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-bottom: 8px;
+            background: #0f172a;
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #e91e63;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>AnimAI Story Generator</h1>
-        <p class="tagline">Cinematic Ghibli Style • AI does everything</p>
-        
-        <div class="section">
-            <h3>1. Video Format</h3>
-            <button class="ratio-btn active" data-ratio="16:9">16:9 YouTube</button>
-            <button class="ratio-btn" data-ratio="9:16">9:16 Shorts</button>
+        <h1>AnimAI</h1>
+        <p class="subtitle">Turn your story into Ghibli-style video — 100% Free</p>
+
+        <div class="ratio-group">
+            <button class="ratio-btn active" data-ratio="9:16">9:16 Reel</button>
+            <button class="ratio-btn" data-ratio="16:9">16:9 YouTube</button>
+            <button class="ratio-btn" data-ratio="1:1">1:1 Square</button>
         </div>
 
-        <div class="section">
-            <h3>2. Your Roman Telugu Script</h3>
-            <textarea id="script" placeholder="Paste your story here... 
-Example: Scene 1: College gate, morning. Trilochana bhayam tho book pattukoni undi. Shiva vastadu..."></textarea>
+        <div class="format-hint">
+            <strong>Format:</strong><br>
+            Scene 1: [VISUAL: describe the shot]<br>
+            DIALOGUE: "What the character says"
         </div>
 
-        <div class="section">
-            <button id="generate" disabled>Generate Video — Coming Day 2</button>
-            <p class="note">Day 1: UI test only. AI connects tomorrow.</p>
-        </div>
+        <textarea id="script" placeholder='Scene 1: [VISUAL: College gate at sunrise. A nervous girl holding books, looking around]
+DIALOGUE: "He promised he would be here by nine. Where is he?"
 
-        <div class="section">
-            <h3>3. Preview</h3>
-            <video id="player" controls></video>
-        </div>
+Scene 2: [VISUAL: Motorcycle skids to stop. Cool guy removes helmet, wind blowing his hair]
+DIALOGUE: "Hey. Sorry I am late. Did you wait long?"'></textarea>
 
-        <div class="section">
-            <h3>4. Director Notes — Chat to Edit</h3>
-            <input type="text" id="chat" placeholder="After preview: type edits like 'add rain at 0:23'" disabled>
-            <button id="sendEdit" disabled>Send Edit</button>
-        </div>
+        <button id="generate" disabled>Loading video engine...</button>
+
+        <div id="result"></div>
     </div>
-    <script src="script.js"></script>
+
+    <!-- IMPORTANT: type="module" makes ES imports work -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>
