@@ -16,8 +16,7 @@ export default async function handler(req, res) {
     });
     
     // 3. Generate Telugu voice with ElevenLabs - uses your 10k free credits
-    const voiceRes = await fetch('https://api.elevenlabs.io/v1/text-to-speech/pNInz6obpgDQGcFmaJgB', {
-      method: 'POST',
+const voiceRes = await fetch('https://api.elevenlabs.io/v1/text-to-speech/XrExE9yKIg1WjnnlVkGX', {      method: 'POST',
       headers: {
         'xi-api-key': process.env.ELEVENLABS_API_KEY,
         'Content-Type': 'application/json'
